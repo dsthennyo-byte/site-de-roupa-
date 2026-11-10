@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f6f1">
+  <meta name="description" content="Conheça a curadoria Yan Sthennyo Jeans: moda premium, denim e peças selecionadas para expressar seu estilo.">
+  <title>Yan Sthennyo Jeans | Moda premium</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  
+</head>
+<body>
+  <div class="topline">YAN STHENNYO JEANS · CURADORIA PREMIUM</div>
+  <header class="site-header">
+    <a class="brand" href="{{ url_for('index') }}">YAN STHENNYO <span>JEANS</span></a>
+    <nav class="main-nav" aria-label="Navegação principal">
+      <a href="{{ url_for('index') }}#colecao">Coleção</a>
+      <a href="{{ url_for('index') }}#sobre">Nossa essência</a>
+      <a href="{{ url_for('index') }}#carrinho">Carrinho{% if quantidade_total %} <span class="cart-count">{{ quantidade_total }}</span>{% endif %}</a>
+    </nav>
+    <div class="account-nav">
+      {% if usuario %}
+        <a class="account-name" href="{{ url_for('pedidos') }}">Olá, {{ usuario["nome"].split(" ")[0] }}</a>
+        <form action="{{ url_for('sair') }}" method="post"><button class="text-button" type="submit">Sair</button></form>
+      {% else %}
+        <a href="{{ url_for('login') }}">Entrar</a>
+        <a class="button button-small" href="{{ url_for('registrar') }}">Criar conta</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <main>
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+      {% if mensagens %}
+        <div class="notices" role="status">
+          {% for categoria, mensagem in mensagens %}
+            <p class="notice notice-{{ categoria }}">{{ mensagem }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if modo == "login" or modo == "registrar" %}
+      <section class="auth-wrap">
+        <div class="auth-image">
+          <p class="eyebrow">O essencial é extraordinário</p>
+          <h1>Vista a sua<br><em>melhor versão.</em></h1>
+        </div>
+        <div class="auth-card">
+          {% if modo == "registrar" %}
+            <p class="eyebrow">Faça parte</p>
+            <h2>Crie sua conta</h2>
+            <p class="muted">Acompanhe seus pedidos e descubra novidades.</p>
+            <form class="form-stack" action="{{ url_for('registrar') }}" method="post">
+              <label>Nome completo<input type="text" name="nome" autocomplete="name" required></label>
+              <label>E-mail<input type="email" name="email" autocomplete="email" required></label>
+              <label>Senha <span class="field-hint">(mínimo de 8 caracteres)</span><input type="password" name="senha" minlength="8" autocomplete="new-password" required></label>
+              <button class="button button-wide" type="submit">Criar minha conta</button>
+            </form>
+            <p class="auth-switch">Já tem uma conta? <a href="{{ url_for('login') }}">Entrar</a></p>
+          {% else %}
+            <p class="eyebrow">Que bom ter você de volta</p>
+            <h2>Entre na sua conta</h2>
+            <p class="muted">Acesse seus pedidos e continue de onde parou.</p>
+            <form class="form-stack" action="{{ url_for('login') }}" method="post">
+              <label>E-mail<input type="email" name="email" autocomplete="email" required></label>
+              <label>Senha<input type="password" name="senha" autocomplete="current-password" required></label>
+              <button class="button button-wide" type="submit">Entrar</button>
+            </form>
+            <p class="auth-switch">Ainda não tem conta? <a href="{{ url_for('registrar') }}">Cadastre-se</a></p>
+          {% endif %}
+        </div>
+      </section>
+    {% elif modo == "pedidos" %}
+      <section class="page-section order-section">
+        <p class="eyebrow">Sua experiência Yan Sthennyo Jeans</p>
+        <h1>Meus pedidos</h1>
+        {% if pedidos %}
+          <div class="orders">
+            {% for pedido in pedidos %}
+              <article class="order-card">
+                <div><span class="order-number">Pedido #{{ pedido["id"] }}</span><p>{{ pedido["criado_em"] }}</p><p>{{ pedido["itens"] }}</p></div>
+                <strong>R$ {{ "%.2f"|format(pedido["total"]) }}</strong>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state"><p>Você ainda não fez nenhum pedido.</p><a class="button" href="{{ url_for('index') }}#colecao">Explorar coleção</a></div>
+        {% endif %}
+      </section>
+    {% else %}
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Elegância sem esforço</p>
+          <h1>Vista o seu<br>melhor <em>estilo.</em></h1>
+          <p>Jeans e peças selecionadas para quem transforma presença em assinatura.</p>
+          <a class="button" href="#colecao">Descobrir coleção <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="hero-art">
+          <img src="{{ url_for('static', filename='images/editorial.jpg') }}" alt="Editorial de moda com look contemporâneo" fetchpriority="high">
+          <div class="hero-frame">
+            <span class="frame-number">YAN STHENNYO JEANS · 01</span>
+            <span class="frame-caption">Sua presença.<br>Seu estilo.</span>
+          </div>
+        </div>
+        <span class="hero-side-note">ESTILO COM IDENTIDADE</span>
+      </section>
+
+      <section class="benefits" aria-label="Vantagens da loja">
+        <div><span class="benefit-icon">✳</span><p><strong>Curadoria especial</strong><br>Estilo em cada escolha</p></div>
+        <div><span class="benefit-icon">◇</span><p><strong>Moda premium</strong><br>Detalhes que fazem a diferença</p></div>
+        <div><span class="benefit-icon">↗</span><p><strong>Seu estilo, sua escolha</strong><br>Peças para expressar quem você é</p></div>
+      </section>
+
+      <section class="collection page-section" id="colecao">
+        <div class="section-heading">
+          <div><p class="eyebrow">A seleção da casa</p><h2>Peças em destaque</h2></div>
+          <p>Encontre seu próximo favorito.<br>Escolha uma peça e adicione à sacola.</p>
+        </div>
+        <div class="product-grid">
+          {% for produto in produtos %}
+            <article class="product-card">
+              <div class="product-visual">
+                <img src="{{ url_for('static', filename='images/' ~ produto['imagem']) }}" alt="{{ produto['nome'] }} — {{ produto['categoria'] }}" loading="lazy">
+                <span class="product-category">{{ produto["categoria"] }}</span>
+                <span class="visual-index">0{{ loop.index }}</span>
+              </div>
+              <div class="product-details">
+                <div><h3>{{ produto["nome"] }}</h3><p>{{ produto["descricao"] or "Design atemporal, feito para acompanhar você." }}</p></div>
+                <strong class="price">R$ {{ "%.2f"|format(produto["preco"]) }}</strong>
+              </div>
+              <div class="product-footer">
+                {% if produto["quantidade"] > 0 and produto["status"] == "Disponível" %}
+                  <span class="stock">{{ produto["quantidade"] }} em estoque</span>
+                  <form class="add-form" action="{{ url_for('adicionar_carrinho', id_produto=produto['id']) }}" method="post">
+                    <label class="sr-only" for="qty-{{ produto['id'] }}">Quantidade de {{ produto["nome"] }}</label>
+                    <input id="qty-{{ produto['id'] }}" type="number" name="quantidade" value="1" min="1" max="{{ produto['quantidade'] }}">
+                    <button class="button button-small" type="submit">Adicionar</button>
+                  </form>
+                {% else %}
+                  <span class="stock stock-empty">Indisponível no momento</span>
+                {% endif %}
+              </div>
+            </article>
+          {% else %}
+            <p class="empty-products">Novas peças chegam em breve.</p>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="cart-section page-section" id="carrinho">
+        <div class="section-heading">
+        <div><p class="eyebrow">Sua seleção especial</p><h2>Sua sacola</h2></div>
+          <a class="continue-link" href="#colecao">Continuar comprando <span aria-hidden="true">→</span></a>
+        </div>
+        {% if carrinho %}
+          <form action="{{ url_for('atualizar_carrinho') }}" method="post">
+            <div class="cart-list">
+              {% for linha in carrinho %}
+                <div class="cart-row">
+                  <div class="cart-product"><img class="cart-thumbnail" src="{{ url_for('static', filename='images/' ~ linha.produto['imagem']) }}" alt=""><div><strong>{{ linha.produto["nome"] }}</strong><span>{{ linha.produto["categoria"] }}</span></div></div>
+                  <label class="cart-quantity">Qtd.<input type="number" name="quantidade_{{ linha.produto['id'] }}" value="{{ linha.quantidade }}" min="0" max="{{ linha.produto['quantidade'] }}"></label>
+                  <strong>R$ {{ "%.2f"|format(linha.subtotal) }}</strong>
+                  <button class="remove-button" type="submit" form="remove-{{ linha.produto['id'] }}" aria-label="Remover {{ linha.produto['nome'] }}">Remover</button>
+                </div>
+              {% endfor %}
+            </div>
+            <div class="cart-actions"><button class="button button-outline" type="submit">Atualizar quantidades</button></div>
+          </form>
+          {% for linha in carrinho %}
+            <form id="remove-{{ linha.produto['id'] }}" action="{{ url_for('remover_carrinho', id_produto=linha.produto['id']) }}" method="post"></form>
+          {% endfor %}
+          <div class="cart-summary">
+            <p><span>Subtotal</span><strong>R$ {{ "%.2f"|format(total) }}</strong></p>
+            <p class="shipping-note">Pagamento e envio são combinados após o registro do pedido. Pagamento on-line ainda não integrado.</p>
+            <form action="{{ url_for('finalizar') }}" method="post"><button class="button button-wide" type="submit">Registrar pedido</button></form>
+            {% if not usuario %}<p class="checkout-hint">Você precisará entrar ou criar uma conta para concluir.</p>{% endif %}
+          </div>
+        {% else %}
+          <div class="empty-state"><p>Seu carrinho está esperando por algo especial.</p><a class="button" href="#colecao">Explorar coleção</a></div>
+        {% endif %}
+      </section>
+
+      <section class="about-section" id="sobre">
+        <p class="eyebrow">Yan Sthennyo Jeans</p>
+        <h2>Vista sua essência.<br>Faça seu estilo.</h2>
+        <p>Uma curadoria de jeans e moda premium para acompanhar você em todos os momentos. Escolha suas peças favoritas e monte um visual com a sua identidade.</p>
+      </section>
+    {% endif %}
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand" href="{{ url_for('index') }}">YAN STHENNYO <span>JEANS</span></a>
+    <p>Moda com presença. Feita para durar.</p>
+    <a class="footer-admin" href="{{ url_for('cadastrar') }}">Gerenciar produtos</a>
+    <small>© 2026 YAN STHENNYO JEANS. Fotos ilustrativas: <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer">Unsplash</a>.</small>
+  </footer>
+</body>
+</html>

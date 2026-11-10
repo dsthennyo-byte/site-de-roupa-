@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ titulo }} | Yan Sthennyo Jeans</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="topline">YAN STHENNYO JEANS · GESTÃO DA COLEÇÃO</div>
+  <main class="product-form-page">
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+      {% if mensagens %}
+        <div class="notices" role="status">
+          {% for categoria, mensagem in mensagens %}
+            <p class="notice notice-{{ categoria }}">{{ mensagem }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    <form class="product-form" method="post">
+      <p class="eyebrow">Catálogo e estoque</p>
+      <h1>{{ titulo }}</h1>
+      <label>Nome do produto<input type="text" name="nome" value="{{ produto['nome'] if produto else '' }}" required></label>
+      <label>Categoria<input type="text" name="categoria" value="{{ produto['categoria'] if produto else '' }}" required></label>
+      <label>Descrição<textarea name="descricao">{{ produto['descricao'] if produto else '' }}</textarea></label>
+      <label>Imagem do produto
+        <select name="imagem" required>
+          {% for arquivo, rotulo in imagens.items() %}
+            <option value="{{ arquivo }}" {% if (produto and produto["imagem"] == arquivo) or (not produto and arquivo == "editorial.jpg") %}selected{% endif %}>{{ rotulo }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Preço (R$)<input type="number" name="preco" min="0" step="0.01" value="{{ produto['preco'] if produto else '' }}" required></label>
+      <label>Quantidade em estoque<input type="number" name="quantidade" min="0" step="1" value="{{ produto['quantidade'] if produto else 0 }}" required></label>
+      <label>Status
+        <select name="status">
+          <option value="Disponível" {% if not produto or produto['status'] == 'Disponível' %}selected{% endif %}>Disponível</option>
+          <option value="Indisponível" {% if produto and produto['status'] == 'Indisponível' %}selected{% endif %}>Indisponível</option>
+        </select>
+      </label>
+      <button class="button button-wide" type="submit">Salvar produto</button>
+      <a class="back-link" href="{{ url_for('index') }}">← Voltar para a loja</a>
+    </form>
+  </main>
+</body>
+</html>
